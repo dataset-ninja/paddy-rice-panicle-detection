@@ -1,12 +1,24 @@
-import supervisely as sly
-import os
-from dataset_tools.convert import unpack_if_archive
-import src.settings as s
-from urllib.parse import unquote, urlparse
-from supervisely.io.fs import get_file_name, get_file_size
-import shutil
+# https://zenodo.org/record/4444741#.YlAuZX9Bzmg
 
+import os
+import shutil
+from urllib.parse import unquote, urlparse
+
+import numpy as np
+import supervisely as sly
+from cv2 import connectedComponents
+from dataset_tools.convert import unpack_if_archive
+from dotenv import load_dotenv
+from supervisely.io.fs import (
+    file_exists,
+    get_file_name,
+    get_file_name_with_ext,
+    get_file_size,
+)
 from tqdm import tqdm
+
+import src.settings as s
+
 
 def download_dataset(teamfiles_dir: str) -> str:
     """Use it for large datasets to convert them on the instance"""
@@ -69,17 +81,65 @@ def count_files(path, extension):
 def convert_and_upload_supervisely_project(
     api: sly.Api, workspace_id: int, project_name: str
 ) -> sly.ProjectInfo:
-    ### Function should read local dataset and upload it to Supervisely project, then return project info.###
-    raise NotImplementedError("The converter should be implemented manually.")
 
-    # dataset_path = "/local/path/to/your/dataset" # general way
-    # dataset_path = download_dataset(teamfiles_dir) # for large datasets stored on instance
 
-    # ... some code here ...
+    # project_name = "Rice Panicle"
+    dataset_path = "/home/grokhi/rawdata/paddy-rice-panicle-detection/512"
+    batch_size = 30
 
-    # sly.logger.info('Deleting temporary app storage files...')
-    # shutil.rmtree(storage_dir)
+    images_folder_name = "coco"
+    masks_folder_name = "semantic_masks"
 
-    # return project
+
+    def create_ann(image_path):
+        labels = []
+
+        image_name = get_file_name_with_ext(image_path)
+        mask_path = os.path.join(masks_path, image_name)
+        if file_exists(mask_path):
+            mask_np = sly.imaging.image.read(mask_path)[:, :, 0]
+            img_height = mask_np.shape[0]
+            img_wight = mask_np.shape[1]
+            mask = mask_np == 1
+            ret, curr_mask = connectedComponents(mask.astype("uint8"), connectivity=8)
+            for i in range(1, ret):
+                obj_mask = curr_mask == i
+                curr_bitmap = sly.Bitmap(obj_mask)
+                curr_label = sly.Label(curr_bitmap, obj_class)
+                labels.append(curr_label)
+
+        return sly.Annotation(img_size=(img_height, img_wight), labels=labels)
+
+
+    obj_class = sly.ObjClass("panicle", sly.Bitmap)
+    obj_class_collection = sly.ObjClassCollection([obj_class])
+
+
+    project = api.project.create(workspace_id, project_name, change_name_if_conflict=True)
+    meta = sly.ProjectMeta(obj_classes=obj_class_collection)
+    api.project.update_meta(project.id, meta.to_json())
+
+    for ds_name in os.listdir(dataset_path):
+        dataset = api.dataset.create(project.id, ds_name, change_name_if_conflict=True)
+
+        images_path = os.path.join(dataset_path, ds_name, images_folder_name)
+        masks_path = os.path.join(dataset_path, ds_name, masks_folder_name)
+        images_names = os.listdir(images_path)
+
+        progress = sly.Progress("Create dataset {}".format(ds_name), len(images_names))
+
+        for img_names_batch in sly.batched(images_names, batch_size=batch_size):
+            images_pathes_batch = [
+                os.path.join(images_path, image_name) for image_name in img_names_batch
+            ]
+
+            img_infos = api.image.upload_paths(dataset.id, img_names_batch, images_pathes_batch)
+            img_ids = [im_info.id for im_info in img_infos]
+
+            anns_batch = [create_ann(image_path) for image_path in images_pathes_batch]
+            api.annotation.upload_anns(img_ids, anns_batch)
+
+            progress.iters_done_report(len(img_names_batch))
+    return project
 
 

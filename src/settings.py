@@ -13,37 +13,46 @@ from dataset_tools.templates import (
 ##################################
 # * Before uploading to instance #
 ##################################
-PROJECT_NAME: str = None
-PROJECT_NAME_FULL: str = None
+PROJECT_NAME: str = "Paddy Rice Imagery"
+PROJECT_NAME_FULL: str = "Paddy Rice Imagery Dataset for Panicle Segmentation"
 HIDE_DATASET = True  # set False when 100% sure about repo quality
 
 ##################################
 # * After uploading to instance ##
 ##################################
-LICENSE: License = None
-APPLICATIONS: List[Union[Industry, Domain, Research]] = None
-CATEGORY: Category = None
+LICENSE: License = License.CC_BY_4_0()
+APPLICATIONS: List[Union[Industry, Domain, Research]] = [Industry.Agricultural()]
+CATEGORY: Category = Category.Agriculture()
 
-CV_TASKS: List[CVTask] = None
-ANNOTATION_TYPES: List[AnnotationType] = None
+CV_TASKS: List[CVTask] = [CVTask.InstanceSegmentation(), CVTask.SemanticSegmentation(), CVTask.ObjectDetection()]
+ANNOTATION_TYPES: List[AnnotationType] = [AnnotationType.SemanticSegmentation()]
 
-RELEASE_DATE: Optional[str] = None  # e.g. "YYYY-MM-DD"
+RELEASE_DATE: Optional[str] = "2021-01-10"  # e.g. "YYYY-MM-DD"
 if RELEASE_DATE is None:
     RELEASE_YEAR: int = None
 
-HOMEPAGE_URL: str = None
+HOMEPAGE_URL: str = "https://zenodo.org/record/4444741#.YlAuZX9Bzmg"
 # e.g. "https://some.com/dataset/homepage"
 
 PREVIEW_IMAGE_ID: int = None
 # This should be filled AFTER uploading images to instance, just ID of any image.
 
-GITHUB_URL: str = None
+GITHUB_URL: str = "https://github.com/dataset-ninja/paddy-rice-panicle-detection"
 # URL to GitHub repo on dataset ninja (e.g. "https://github.com/dataset-ninja/some-dataset")
 
 ##################################
 ### * Optional after uploading ###
 ##################################
-DOWNLOAD_ORIGINAL_URL: Optional[Union[str, dict]] = None
+DOWNLOAD_ORIGINAL_URL: Optional[Union[str, dict]] = {
+    "128.zip": "https://zenodo.org/record/4444741/files/128.zip?download=1",
+    "256.zip": "https://zenodo.org/record/4444741/files/256.zip?download=1",
+    "512.zip": "https://zenodo.org/record/4444741/files/512.zip?download=1",
+    "basic dataset.zip": "https://zenodo.org/record/4444741/files/basic%20dataset.zip?download=1",
+    "label_map.txt": "https://zenodo.org/record/4444741/files/label_map.txt?download=1",
+    "README.txt": "https://zenodo.org/record/4444741/files/README.txt?download=1",
+    "refined dataset.zip": "https://zenodo.org/record/4444741/files/refined%20dataset.zip?download=1",
+    "splitting.ipynb": "https://zenodo.org/record/4444741/files/splitting.ipynb?download=1",
+}
 # Optional link for downloading original dataset (e.g. "https://some.com/dataset/download")
 
 CLASS2COLOR: Optional[Dict[str, List[str]]] = None
@@ -51,15 +60,15 @@ CLASS2COLOR: Optional[Dict[str, List[str]]] = None
 
 # If you have more than the one paper, put the most relatable link as the first element of the list
 # Use dict key to specify name for a button
-PAPER: Optional[Union[str, List[str], Dict[str, str]]] = None
+PAPER: Optional[Union[str, List[str], Dict[str, str]]] = "https://www.mdpi.com/2073-4395/11/8/1542#sec4-agronomy-11-01542"
 BLOGPOST: Optional[Union[str, List[str], Dict[str, str]]] = None
 REPOSITORY: Optional[Union[str, List[str], Dict[str, str]]] = None
 
-CITATION_URL: Optional[str] = None
-AUTHORS: Optional[List[str]] = None
+CITATION_URL: Optional[str] = "https://zenodo.org/record/4444741/export/hx"
+AUTHORS: Optional[List[str]] = ["Hao Wang", "Suxing Lyu", "Yaxin Ren"]
 
-ORGANIZATION_NAME: Optional[Union[str, List[str]]] = None
-ORGANIZATION_URL: Optional[Union[str, List[str]]] = None
+ORGANIZATION_NAME: Optional[Union[str, List[str]]] = ["Beijing Academy of Agriculture and Forestry Sciences, China", "Hokkaido University, Japan"]
+ORGANIZATION_URL: Optional[Union[str, List[str]]] = ["https://goodberry-eu.eu/team/consortium/baafs/", "https://www.global.hokudai.ac.jp/"]
 
 # Set '__PRETEXT__' or '__POSTTEXT__' as a key with string value to add custom text. e.g. SLYTAGSPLIT = {'__POSTTEXT__':'some text}
 SLYTAGSPLIT: Optional[Dict[str, Union[List[str], str]]] = None
