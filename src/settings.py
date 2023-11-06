@@ -25,7 +25,7 @@ APPLICATIONS: List[Union[Industry, Domain, Research]] = [Industry.Agricultural()
 CATEGORY: Category = Category.Agriculture(extra=Category.Drones())
 
 CV_TASKS: List[CVTask] = [CVTask.InstanceSegmentation(), CVTask.SemanticSegmentation(), CVTask.ObjectDetection()]
-ANNOTATION_TYPES: List[AnnotationType] = [AnnotationType.SemanticSegmentation()]
+ANNOTATION_TYPES: List[AnnotationType] = [AnnotationType.InstanceSegmentation()]
 
 RELEASE_DATE: Optional[str] = "2021-01-10"  # e.g. "YYYY-MM-DD"
 if RELEASE_DATE is None:
@@ -66,6 +66,7 @@ REPOSITORY: Optional[Union[str, List[str], Dict[str, str]]] = None
 
 CITATION_URL: Optional[str] = "https://zenodo.org/record/4444741/export/hx"
 AUTHORS: Optional[List[str]] = ["Hao Wang", "Suxing Lyu", "Yaxin Ren"]
+AUTHORS_CONTACTS: Optional[List[str]] = ["wangh@nercita.org.cn", "johnlyu@bpe.agr.hokudai.ac.jp", "renyx@nercita.org.cn"]
 
 ORGANIZATION_NAME: Optional[Union[str, List[str]]] = ["Beijing Academy of Agriculture and Forestry Sciences, China", "Hokkaido University, Japan"]
 ORGANIZATION_URL: Optional[Union[str, List[str]]] = ["https://goodberry-eu.eu/team/consortium/baafs/", "https://www.global.hokudai.ac.jp/"]
@@ -119,6 +120,7 @@ def get_settings():
     settings["repository"] = REPOSITORY
     settings["citation_url"] = CITATION_URL
     settings["authors"] = AUTHORS
+    settings["authors_contacts"] = AUTHORS_CONTACTS
     settings["organization_name"] = ORGANIZATION_NAME
     settings["organization_url"] = ORGANIZATION_URL
     settings["slytagsplit"] = SLYTAGSPLIT
